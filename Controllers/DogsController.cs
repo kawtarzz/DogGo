@@ -1,56 +1,59 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DogGo.Models;
+using DogGo.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using DogGo.Models;
-using DogGo.Repositories;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DogGo.Controllers
 {
-    public class DogController : Controller
+    public class DogsController : Controller
     {
-        private readonly IDogRepository _dogRepo;
-        private readonly IOwnerRepository _ownerRepo;
+        private readonly IDogRepository _dogRepository;
+        
 
-        public DogController(IOwnerRepository ownerRepository, IDogRepository dogRepository)
+        public DogsController(IDogRepository dogRepository)
         {
-            _ownerRepo = ownerRepository;
-            _dogRepo = dogRepository;
+            _dogRepository = dogRepository;
+           
         }
-        // GET: DogController
-
+        // GET: DogsController
         public ActionResult Index()
         {
-            List<Dog> dogs = _dogRepo.GetAllDogs();
+            List<Dog> dogs = _dogRepository.GetAllDogs();
             return View(dogs);
         }
 
-        // GET: DogController/Details/5
+        // GET: DogsController/Details/5
         public ActionResult Details(int id)
         {
-            Dog dog = _dogRepo.GetDogById(id);
+            Dog dog = _dogRepository.GetDogById(id);
 
             if (dog == null)
             {
                 return NotFound();
             }
+
             return View(dog);
+
         }
 
-        // GET: DogController/Create
+        // GET: DogsController/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: DogController/Create
+        // POST: DogsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Dog dog)
         {
             try
             {
-                _dogRepo.AddDog(dog);
+                _dogRepository.AddDog(dog);
 
                 return RedirectToAction("Index");
             }
@@ -60,10 +63,10 @@ namespace DogGo.Controllers
             }
         }
 
-        // GET: DogController/Edit/5
+        // GET: DogsController/Edit/5
         public ActionResult Edit(int id)
         {
-            Dog dog = _dogRepo.GetDogById(id);
+            Dog dog = _dogRepository.GetDogById(id);
             if (dog == null)
             {
                 return NotFound();
@@ -71,37 +74,14 @@ namespace DogGo.Controllers
             return View(dog);
         }
 
-        // POST: DogController/Edit/5
+        // POST: DogsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, Dog dog)
         {
             try
             {
-                _dogRepo.UpdateDog(dog);
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View(dog);
-            }
-        }
-
-        // GET: DogController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            Dog dog = _dogRepo.GetDogById(id);
-            return View(dog);
-        }
-
-        // POST: DogController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, Dog dog)
-        {
-            try
-            {
-                _dogRepo.DeleteDog(id);
+                _dogRepository.UpdateDog(dog);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -109,5 +89,29 @@ namespace DogGo.Controllers
                 return View(dog);
             }
         }
+
+        // GET: DogsController/Delete/5
+        public ActionResult Delete(int id)
+        {
+            Dog dog = _dogRepository.GetDogById(id);
+            return View(dog);
+        }
+
+        // POST: DogsController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, Dog dog)
+        {
+            try
+            {
+                _dogRepository.DeleteDog(id);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return View(dog);
+            }
+        }
+
     }
 }
